@@ -1,23 +1,17 @@
-// Home.jsx
+//Home.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BsCircleFill, BsFillCheckCircleFill, BsFillTrashFill } from 'react-icons/bs';
+import { BsCircleFill, BsFillCheckCircleFill, BsFillTrashFill, BsMoon, BsSun } from 'react-icons/bs';
 import Create from './Create';
-import TaskDetails from './TaskDetails';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Modal from 'react-modal'; // Import Modal from react-modal
 import './Home.css';
-
-Modal.setAppElement('#root'); // Set the root element for the modal
 
 function Home() {
   const [todos, setTodos] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     return JSON.parse(localStorage.getItem('darkMode')) || false;
   });
-  const [modalIsOpen, setModalIsOpen] = useState(false); // State to control the modal
 
   useEffect(() => {
     axios.get("http://localhost:3001/get")
@@ -30,6 +24,12 @@ function Home() {
   }, [darkMode]);
 
   const handleEdit = async (id) => {
+    const confirmEdit = window.confirm("Are you sure you want to mark this task as done?");
+    
+    if (!confirmEdit) {
+      return;
+    }
+  
     try {
       const result = await axios.put(`http://localhost:3001/update/${id}`, { done: true });
       const updatedTodos = todos.map(todo => (todo._id === id ? { ...todo, done: true } : todo));
@@ -40,6 +40,7 @@ function Home() {
       console.error('Edit error:', err);
     }
   }
+  
 
   const handleDelete = async (id, task) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete "${task}"?`);
@@ -82,16 +83,6 @@ function Home() {
     });
   };
 
-  const openModal = (task) => {
-    setSelectedTask(task);
-    setModalIsOpen(true);
-  }
-
-  const closeModal = () => {
-    setSelectedTask(null);
-    setModalIsOpen(false);
-  }
-
   return (
     <div className={`home-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
       <h1>Todo List</h1>
@@ -103,40 +94,37 @@ function Home() {
           <div><h2>No Record</h2></div>
         ) : (
           <div className="tasks">
-            {todos.map((todo, index) => (
-              <div className='task' key={todo._id}>
-                <div className='checkbox' onClick={() => handleEdit(todo._id)}>
-                  {todo.done ? <BsFillCheckCircleFill className='icon' /> : <BsCircleFill className='icon' />}
-                  <p className={todo.done ? "line_through" : ""}>{todo.task}</p>
-                  <p className="priority">{todo.priority}</p>
-                  <p className="notes">{todo.notes}</p>
-                  <button onClick={() => openModal(todo)}>Details</button>
-                </div>
-                <div>
-                  <span onClick={() => handleDelete(todo._id, todo.task)}><BsFillTrashFill className='icon' /></span>
-                </div>
-              </div>
-            ))}
+      
+      {todos.map((todo, index) => (
+        <div className={`task ${todo.priority.toLowerCase()}`} key={todo._id}>
+          <div className='task-info' onClick={() => handleEdit(todo._id)}>
+            <div>
+              <h3 className={todo.done ? "line_through" : ""}>Task name: {todo.task}</h3>
+              <p>Details: {todo.notes}</p>
+            </div>
+            <div className="icons-container">
+            {todo.done ? (
+            <BsFillCheckCircleFill className='icon done' />
+            ) : (
+              <BsFillTrashFill className='icon trash' onClick={() => handleDelete(todo._id, todo.task)} />
+            )}
+            <BsFillTrashFill className='icon trash' onClick={() => handleDelete(todo._id, todo.task)} />
+      
+            </div>
+          </div>
+        </div>
+      ))}
+
+
           </div>
         )}
       </div>
 
       <button onClick={toggleDarkMode} className="mode-toggle">
-        {darkMode ? 'Light Mode' : 'Dark Mode'}
+        {darkMode ? <BsSun /> : <BsMoon />}
       </button>
 
       <ToastContainer />
-
-      {/* Render TaskDetails component in a modal */}
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        className="modal"
-        overlayClassName="overlay"
-      >
-        {selectedTask && <TaskDetails task={selectedTask} />}
-        <button onClick={closeModal}>Close</button>
-      </Modal>
     </div>
   );
 }
