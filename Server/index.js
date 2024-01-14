@@ -1,47 +1,59 @@
-const express = require('express')
-const moongose = require('mongoose')
-const cors = require('cors')
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
 const TodoModel = require('./Models/Todo');
 
+const app = express();
+const PORT = 3001;
 
+app.use(cors());
+app.use(express.json());
 
-const app = express()
-app.use(cors())
-app.use(express.json())
+mongoose.connect('mongodb://localhost:27017/test', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+app.get('/get', async (req, res) => {
+  try {
+    const todos = await TodoModel.find();
+    res.json(todos);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
-moongose.connect('mongodb://localhost:27017/test')
+app.put('/update/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const updatedTodo = await TodoModel.findByIdAndUpdate(id, { done: true }, { new: true });
+    res.json(updatedTodo);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
+app.post('/add', async (req, res) => {
+    const { task,notes } = req.body;
+  
+    try {
+      const newTodo = await TodoModel.create({ task, notes });
+      res.json(newTodo);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
 
+app.delete('/delete/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const deletedTodo = await TodoModel.findByIdAndDelete(id);
+    res.json(deletedTodo);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
-app.get('/get', (req, res) => {
-    TodoModel.find()
-    .then(result => res.json(result) )
-    .catch(err => res.json(err))
-    })
-
-    app.put('/update/:id', (req, res) => {
-        const { id } = req.params;
-        TodoModel.findByIdAndUpdate(id, { done: true })
-            .then(result => res.json(result))
-            .catch(err => res.json(err));
-    });
-    
-    
-app.post('/add',(req, res) => {
-    const task = req.body.task;
-    TodoModel.create({
-        task: task
-    }).then(result => res.json(result) )
-    .catch(err => res.json(err))
-    });
-
-app.delete('/delete/:id', (req, res) => {
-    const {id} = req.params;
-    TodoModel.findByIdAndDelete({_id: id})
-    .then(result => res.json(result) )
-    .catch(err => res.json(err))
-    });
-
-app.listen(3001, () => {
-    console.log('Server is running on port 3001')
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

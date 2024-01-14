@@ -3,15 +3,21 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BsCircleFill, BsFillCheckCircleFill, BsFillTrashFill } from 'react-icons/bs';
 import Create from './Create';
+import TaskDetails from './TaskDetails';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Modal from 'react-modal'; // Import Modal from react-modal
 import './Home.css';
+
+Modal.setAppElement('#root'); // Set the root element for the modal
 
 function Home() {
   const [todos, setTodos] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
   const [darkMode, setDarkMode] = useState(() => {
     return JSON.parse(localStorage.getItem('darkMode')) || false;
   });
+  const [modalIsOpen, setModalIsOpen] = useState(false); // State to control the modal
 
   useEffect(() => {
     axios.get("http://localhost:3001/get")
@@ -35,7 +41,13 @@ function Home() {
     }
   }
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id, task) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete "${task}"?`);
+
+    if (!confirmDelete) {
+      return;
+    }
+
     try {
       const result = await axios.delete(`http://localhost:3001/delete/${id}`);
       const updatedTodos = todos.filter(todo => todo._id !== id);
@@ -52,7 +64,6 @@ function Home() {
   };
 
   const handleTaskAdded = () => {
-    // Fetch updated tasks after a task is added
     axios.get("http://localhost:3001/get")
       .then(result => setTodos(result.data))
       .catch(err => console.error(err));
@@ -71,6 +82,16 @@ function Home() {
     });
   };
 
+  const openModal = (task) => {
+    setSelectedTask(task);
+    setModalIsOpen(true);
+  }
+
+  const closeModal = () => {
+    setSelectedTask(null);
+    setModalIsOpen(false);
+  }
+
   return (
     <div className={`home-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
       <h1>Todo List</h1>
@@ -87,9 +108,12 @@ function Home() {
                 <div className='checkbox' onClick={() => handleEdit(todo._id)}>
                   {todo.done ? <BsFillCheckCircleFill className='icon' /> : <BsCircleFill className='icon' />}
                   <p className={todo.done ? "line_through" : ""}>{todo.task}</p>
+                  <p className="priority">{todo.priority}</p>
+                  <p className="notes">{todo.notes}</p>
+                  <button onClick={() => openModal(todo)}>Details</button>
                 </div>
                 <div>
-                  <span onClick={() => handleDelete(todo._id)}><BsFillTrashFill className='icon' /></span>
+                  <span onClick={() => handleDelete(todo._id, todo.task)}><BsFillTrashFill className='icon' /></span>
                 </div>
               </div>
             ))}
@@ -102,6 +126,17 @@ function Home() {
       </button>
 
       <ToastContainer />
+
+      {/* Render TaskDetails component in a modal */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className="modal"
+        overlayClassName="overlay"
+      >
+        {selectedTask && <TaskDetails task={selectedTask} />}
+        <button onClick={closeModal}>Close</button>
+      </Modal>
     </div>
   );
 }
