@@ -1,15 +1,31 @@
+// Example Create.jsx
 import React, { useState } from 'react';
-import axios from "axios";
-import './Create.css'; // Import your CSS file for styling
+import axios from 'axios';
+import './Create.css';
 
-function Create() {
+function Create({ onTaskAdded }) {
   const [task, setTask] = useState('');
+  const [error, setError] = useState('');
 
-  const handleAdd = () => {
-    axios.post("http://localhost:3001/add", { task: task })
-    .then(result =>{
-        location.reload()
-    })
+  const handleAdd = async () => {
+    try {
+      if (task.trim() === '') {
+        setError('Task cannot be empty');
+        return;
+      }
+
+      const result = await axios.post("http://localhost:3001/add", { task: task });
+      
+      if (result.data.error) {
+        setError(result.data.error);
+      } else {
+        onTaskAdded(); // Trigger a callback to update the task list
+        setTask('');
+        setError('');
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -19,9 +35,13 @@ function Create() {
         type="text"
         placeholder='Enter Task'
         value={task}
-        onChange={(e) => setTask(e.target.value)}
+        onChange={(e) => {
+          setTask(e.target.value);
+          setError(''); // Clear error when input changes
+        }}
       />
       <button className="create-button" type="button" onClick={handleAdd}>Add</button>
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 }
