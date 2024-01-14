@@ -1,32 +1,32 @@
-import React, { useState } from "react";
-import "./Create.css"; // Import your CSS file for styling
+import React, { useState } from 'react';
+import axios from "axios";
+import './Create.css'; // Import your CSS file for styling
 
 function Create() {
-  const [task, setTask] = useState("");
+  const [task, setTask] = useState('');
 
-  const handleTaskChange = (e) => {
-    setTask(e.target.value);
-  };
-
-  const handleAddTask = () => {
-    // Add your logic here to handle the addition of the task
-    console.log("Task added:", task);
-    // You can further enhance this function based on your requirements
+  const handleAdd = () => {
+    axios.post("http://localhost:3001/add", { task: task })
+      .then(result => {
+        console.log(result);
+        // You can add additional logic here, such as showing a success message to the user
+      })
+      .catch(err => {
+        console.error(err);
+        // Handle error, you might want to show an error message to the user
+      });
   };
 
   return (
     <div className="create-container">
       <input
-        type="text"
-        name="name"
-        placeholder="Add a new task..."
-        value={task}
-        onChange={handleTaskChange}
         className="create-input"
+        type="text"
+        placeholder='Enter Task'
+        value={task}
+        onChange={(e) => setTask(e.target.value)}
       />
-      <button type="button" onClick={handleAddTask} className="create-button">
-        Add
-      </button>
+      <button className="create-button" type="button" onClick={handleAdd}>Add</button>
     </div>
   );
 }

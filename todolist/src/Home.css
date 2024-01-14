@@ -1,30 +1,64 @@
 /* Home.css */
+
 .home-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* 100% of the viewport height */
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 100% of the viewport height */
+}
+
+.todo-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.todo-item {
+  border: 2px solid #4caf50; /* Add a border around each task */
+  margin: 10px 0;
+  padding: 15px; /* Increase padding for more spacing */
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.3s ease; /* Smooth transition on hover */
+}
+
+.todo-item:hover {
+  background-color: #6d8c65; /* Light background on hover */
+  color: #333; /* Darken the text color on hover for better visibility */
+}
+
+
+.todo-item.completed {
+  background-color: #e0f7e0; /* Light green for completed tasks */
+  border-color: #2ecc71; /* Green border for completed tasks */
+}
+
+.todo-text {
+  flex: 1;
+}
+
+.delete-button {
+  background-color: #e74c3c; /* Red background for delete button */
+  color: #fff; /* White text color */
+  padding: 8px 12px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.no-record {
+  color: #888;
+  margin-top: 10px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .home-container {
+    max-width: 100%;
   }
-  
-  .todo-list {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .todo-item {
-    background-color: #fff;
-    border: 1px solid #ddd;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 5px;
-  }
-  
-  .no-record {
-    color: #888;
-    margin-top: 10px;
-  }
-  
+}
