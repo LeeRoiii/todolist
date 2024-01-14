@@ -7,14 +7,9 @@ function Create() {
 
   const handleAdd = () => {
     axios.post("http://localhost:3001/add", { task: task })
-      .then(result => {
-        console.log(result);
-        // You can add additional logic here, such as showing a success message to the user
-      })
-      .catch(err => {
-        console.error(err);
-        // Handle error, you might want to show an error message to the user
-      });
+    .then(result =>{
+        location.reload()
+    })
   };
 
   return (
