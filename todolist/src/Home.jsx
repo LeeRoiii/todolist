@@ -40,7 +40,7 @@ function Home() {
       console.error('Edit error:', err);
     }
   }
-  
+
 
   const handleDelete = async (id, task) => {
     const confirmDelete = window.confirm(`Are you sure you want to delete "${task}"?`);
