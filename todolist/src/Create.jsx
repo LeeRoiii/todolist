@@ -1,4 +1,4 @@
-// Example Create.jsx
+//Create.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Create.css';

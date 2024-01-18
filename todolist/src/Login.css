@@ -1,0 +1,75 @@
+/* Login.css */
+
+.login-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #000;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    background-color: #00cc66;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+input {
+    flex: 1;
+    padding: 15px;
+    border: 1px solid #000;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: border-color 0.3s ease-in-out;
+    color: #000;
+}
+
+input:focus {
+    border-color: #00cc66; /* Green color on focus */
+}
+
+.icon-button {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: #00cc66; /* Green color */
+}
+
+button {
+    background-color: #fafafa; /* Green color */
+    color: #00cc66;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.remember-me-container {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.remember-me-container input {
+    margin-right: 8px;
+}
+
+.remember-me-label {
+    font-size: 14px;
+    color: #000;
+
+}
